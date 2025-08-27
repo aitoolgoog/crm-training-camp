@@ -38,15 +38,31 @@ const courseRoutes = require('./routes/courses');
 app.use('/api/students', studentRoutes);
 app.use('/api/courses', courseRoutes);
 
-// 健康檢查路由
-app.get('/health', (req, res) => {
-  // 可以在這裡添加資料庫連接檢查
-  res.status(200).json({ 
-    status: 'healthy', 
+// 健康檢查路由 (包含資料庫連接檢查)
+app.get('/health', async (req, res) => {
+  const healthCheck = {
+    status: 'healthy',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
-  });
+    environment: process.env.NODE_ENV || 'development',
+    database: 'disconnected'
+  };
+
+  try {
+    // 檢查資料庫連接
+    const pool = require('./config/database');
+    const result = await pool.query('SELECT NOW() as current_time');
+    healthCheck.database = 'connected';
+    healthCheck.db_time = result.rows[0].current_time;
+  } catch (error) {
+    console.error('Health check database error:', error);
+    healthCheck.status = 'unhealthy';
+    healthCheck.database = 'disconnected';
+    healthCheck.db_error = error.message;
+  }
+
+  const statusCode = healthCheck.status === 'healthy' ? 200 : 503;
+  res.status(statusCode).json(healthCheck);
 });
 
 // API 狀態路由
