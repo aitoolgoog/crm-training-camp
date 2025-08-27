@@ -8,10 +8,8 @@ const pool = new Pool({
   database: process.env.POSTGRES_DATABASE || process.env.DB_NAME || 'crm_system',
   user: process.env.POSTGRES_USERNAME || process.env.DB_USER || 'postgres',
   password: process.env.POSTGRES_PASSWORD || process.env.DB_PASSWORD || 'password',
-  // 生產環境額外的 SSL 設定
-  ...(process.env.NODE_ENV === 'production' && {
-    ssl: process.env.POSTGRES_SSL_DISABLED !== 'true' ? { rejectUnauthorized: false } : false
-  })
+  // 禁用 SSL - Zeabur PostgreSQL 不支援 SSL 連接
+  ssl: false
 });
 
 pool.on('connect', () => {
