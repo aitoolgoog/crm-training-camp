@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM 訓練營學員管理系統</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-graduation-cap"></i> CRM 訓練營管理系統</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#" id="studentsTab"><i class="fas fa-users"></i> 學員管理</a>
+                <a class="nav-link" href="#" id="coursesTab"><i class="fas fa-book"></i> 課程管理</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- 學員管理區塊 -->
+        <div id="studentsSection" class="content-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-users"></i> 學員管理</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                    <i class="fas fa-plus"></i> 新增學員
+                </button>
+            </div>
+
+            <!-- 搜尋列 -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="studentSearch" placeholder="搜尋學員姓名或信箱...">
+                        <button class="btn btn-outline-secondary" type="button" id="searchStudentBtn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 學員表格 -->
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>姓名</th>
+                            <th>信箱</th>
+                            <th>電話</th>
+                            <th>入學日期</th>
+                            <th>狀態</th>
+                            <th>報名課程數</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTable">
+                        <!-- 動態載入學員資料 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 課程管理區塊 -->
+        <div id="coursesSection" class="content-section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-book"></i> 課程管理</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCourseModal">
+                    <i class="fas fa-plus"></i> 新增課程
+                </button>
+            </div>
+
+            <!-- 課程表格 -->
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>課程名稱</th>
+                            <th>開始日期</th>
+                            <th>結束日期</th>
+                            <th>最大人數</th>
+                            <th>目前報名</th>
+                            <th>狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coursesTable">
+                        <!-- 動態載入課程資料 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增學員對話框 -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">新增學員</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStudentForm">
+                        <div class="mb-3">
+                            <label for="studentName" class="form-label">姓名 *</label>
+                            <input type="text" class="form-control" id="studentName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentEmail" class="form-label">信箱 *</label>
+                            <input type="email" class="form-control" id="studentEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentPhone" class="form-label">電話</label>
+                            <input type="tel" class="form-control" id="studentPhone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentAddress" class="form-label">地址</label>
+                            <textarea class="form-control" id="studentAddress" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="studentNotes" class="form-label">備註</label>
+                            <textarea class="form-control" id="studentNotes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveStudentBtn">儲存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增課程對話框 -->
+    <div class="modal fade" id="addCourseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">新增課程</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCourseForm">
+                        <div class="mb-3">
+                            <label for="courseName" class="form-label">課程名稱 *</label>
+                            <input type="text" class="form-control" id="courseName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="courseDescription" class="form-label">課程描述</label>
+                            <textarea class="form-control" id="courseDescription" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="courseStartDate" class="form-label">開始日期</label>
+                                    <input type="date" class="form-control" id="courseStartDate">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="courseEndDate" class="form-label">結束日期</label>
+                                    <input type="date" class="form-control" id="courseEndDate">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="courseMaxStudents" class="form-label">最大學員數</label>
+                            <input type="number" class="form-control" id="courseMaxStudents" value="50" min="1">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveCourseBtn">儲存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 課程詳細檢視對話框 -->
+    <div class="modal fade" id="courseDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">課程詳細資訊</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="courseDetailContent">
+                        <!-- 動態載入課程詳細資訊 -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="addStudentToCourseBtn">
+                        <i class="fas fa-user-plus"></i> 添加學員
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 學員詳細檢視對話框 -->
+    <div class="modal fade" id="studentDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">學員詳細資訊</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="studentDetailContent">
+                        <!-- 動態載入學員詳細資訊 -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="enrollStudentInCourseBtn">
+                        <i class="fas fa-book"></i> 報名課程
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 學員報名課程對話框 -->
+    <div class="modal fade" id="enrollModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">學員報名課程</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="enrollForm">
+                        <input type="hidden" id="enrollCourseId">
+                        <div class="mb-3">
+                            <label for="enrollStudentSelect" class="form-label">選擇學員</label>
+                            <select class="form-select" id="enrollStudentSelect" required>
+                                <option value="">請選擇學員</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="enrollNotes" class="form-label">備註</label>
+                            <textarea class="form-control" id="enrollNotes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirmEnrollBtn">確認報名</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 課程選擇對話框 -->
+    <div class="modal fade" id="selectCourseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">選擇課程</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="selectCourseForm">
+                        <input type="hidden" id="selectCourseStudentId">
+                        <div class="mb-3">
+                            <label for="selectCourseSelect" class="form-label">選擇課程</label>
+                            <select class="form-select" id="selectCourseSelect" required>
+                                <option value="">請選擇課程</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="selectCourseNotes" class="form-label">備註</label>
+                            <textarea class="form-control" id="selectCourseNotes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirmSelectCourseBtn">確認報名</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 通知 -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto">系統通知</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                <!-- 動態內容 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>
